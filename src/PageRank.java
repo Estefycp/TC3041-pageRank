@@ -32,6 +32,11 @@ public class PageRank {
     private static final double DEFAULT_FACTOR=0.85;
     private static final int DEFAULT_ITERATIONS=100;
 
+    /*
+    linksTable keeps track of the source node with its target all of them separated by commas.
+    linksOutTable key is the source node of the information and the data is the amount of edges.
+    nodes is a hashMap with information of all unique nodes their usernames and categories
+     */
     private HashMap<Long,String> nodes;
     private HashMap<Long,Integer> linksOutTable;
     private HashMap<Long,String> linksTable;
@@ -118,7 +123,7 @@ public class PageRank {
     /*
     generatePageRanks
     helper private method
-    We begging by searching by ID and then we split the data the data is a String with all the info of the node
+
     we the split this string based ont he separator.
      */
     private void generatePageRanks (){
@@ -126,9 +131,14 @@ public class PageRank {
 
         while(iterations>=0){
             for(Long id : this.nodes.keySet()){
+                /*We search by ID and then we split the data the data is a String with all the info of the node
+                then we search by the same ID in linksTable. The resulting string has every node connected to the ID.
+                if the node has at less 1 connection we add a split to linkedNodes. Else we append our node with
+                username, category and the 1 minus the factor as the formula in the pageRank says.
+                */
+                String linkedNodes[]=null;
 
                 String[] currentValue=this.nodes.get(id).split(separator);
-                String linkedNodes[]=null;
                 String line=this.linksTable.get(id);
 
                 if(line!=null){
@@ -140,12 +150,18 @@ public class PageRank {
                     continue;
                 }
 
+                /*
+                for every connection in the node we now need to the the sum.
+                pr is the value of the Edge
+                ci is the amount of edges the node has
+                 */
                 double sumPR=0.0;
                 for(String node : linkedNodes){
                     double pr=Double.parseDouble(this.nodes.get(Long.parseLong(node)).split(separator)[2]);
 
                     Integer j=this.linksOutTable.get(Long.parseLong(node));
 
+                    //may remove the if later
                     if(j!=null){
 
                         double ci=(double)j;
@@ -211,7 +227,7 @@ public class PageRank {
 
             long id=Long.parseLong(tmp[col1].replaceAll("\"", ""));
 
-            //Whenever its a node add it to the hashmap by its id as the key and the username and category as the info.
+            //Whenever its a node add it  by its id as the key and the username, category and weight is the info.
             //We take advantage of the hashmap in case we find a similar id the still only keep one key
             if(mode==NODE){
                 this.nodes.put(id, tmp[col2]+separator+tmp[col3]+separator+"0.0");

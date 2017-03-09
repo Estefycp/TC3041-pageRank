@@ -79,6 +79,12 @@ public class PageRank {
 
         JOptionPane.showMessageDialog(null, result);
     }
+    /*
+    page input is the factor, separator, iterations and the files where the data is located.
+    the output of the constructor is an object of the type PageRank.
+    An object of type pageRank has the filename of the nodes and edges of the database
+    and three different hash maps to take care of the
+     */
 
     public PageRank(double factor, String separator,int iterations,String fileNameNodes,String fileNameEdges){
         this.fileNameNodes=fileNameNodes;
@@ -155,17 +161,26 @@ public class PageRank {
         }
     }
 
+    /*
+    readFile
+    A private helper method.
+    Input. Path from the data, the kind of separator and the mode, the mode can be node (0) or edge(1)
+     */
     private void readFile(String path, String separator, int mode) throws IOException{
         BufferedReader bf=new BufferedReader(new FileReader(new File(path)));
 
         String line=bf.readLine();
 
+        //Reed the first line of the file.
+        //Every file has the name of the column in the first line.
         ArrayList<String> columns=new ArrayList<String>(Arrays.asList(line.split(separator)));
 
-        int col1=0,col2=0,col3=0;
+        //Initialise columns.
+        int col1, col2=0,col3=0;
 
         col1=columns.indexOf("id");
 
+        //Identify if we are dealing with a node or an edge
         if(mode==NODE){
             col2=columns.indexOf("username");
             col3=columns.indexOf("category");
@@ -179,6 +194,7 @@ public class PageRank {
 
         String[] tmp;
 
+        //we now iterate from top to bottom looking for the appropriate column
         while(line!=null){
 
             tmp=line.split(separator);

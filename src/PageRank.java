@@ -79,13 +79,16 @@ public class PageRank {
 
         JOptionPane.showMessageDialog(null, result);
     }
+
+
     /*
+    PageRank
+    Constructor
     page input is the factor, separator, iterations and the files where the data is located.
     the output of the constructor is an object of the type PageRank.
     An object of type pageRank has the filename of the nodes and edges of the database
     and three different hash maps to take care of the
      */
-
     public PageRank(double factor, String separator,int iterations,String fileNameNodes,String fileNameEdges){
         this.fileNameNodes=fileNameNodes;
         this.fileNameEdges=fileNameEdges;
@@ -101,8 +104,8 @@ public class PageRank {
         this.min="";
         this.betterThanAvg=new ArrayList<String>();
         try {
-            this.readFile(/*DEFAULT_NODES.getAbsolutePath()*/this.fileNameNodes, DEFAULT_SEPARATOR, NODE);
-            this.readFile(/*DEFAULT_EDGES.getAbsolutePath()*/this.fileNameEdges, DEFAULT_SEPARATOR, EDGE);
+            this.readFile(this.fileNameNodes, DEFAULT_SEPARATOR, NODE);
+            this.readFile(this.fileNameEdges, DEFAULT_SEPARATOR, EDGE);
             this.generatePageRanks();
             this.getBestAndWorstPR();
             this.getBetterAverages();
@@ -112,6 +115,12 @@ public class PageRank {
         }
     }
 
+    /*
+    generatePageRanks
+    helper private method
+    We begging by searching by ID and then we split the data the data is a String with all the info of the node
+    we the split this string based ont he separator.
+     */
     private void generatePageRanks (){
         if(iterations<0) throw new IllegalArgumentException();
 
@@ -119,9 +128,7 @@ public class PageRank {
             for(Long id : this.nodes.keySet()){
 
                 String[] currentValue=this.nodes.get(id).split(separator);
-
                 String linkedNodes[]=null;
-
                 String line=this.linksTable.get(id);
 
                 if(line!=null){
@@ -165,6 +172,9 @@ public class PageRank {
     readFile
     A private helper method.
     Input. Path from the data, the kind of separator and the mode, the mode can be node (0) or edge(1)
+    Output: linksTable keeps track of the source node with its target all of them separated by commas.
+            linksOutTable key is the source node of the information and the data is the amount of edges.
+            nodes is a hashMap with information of all unique nodes their usernames and categories
      */
     private void readFile(String path, String separator, int mode) throws IOException{
         BufferedReader bf=new BufferedReader(new FileReader(new File(path)));
@@ -201,19 +211,25 @@ public class PageRank {
 
             long id=Long.parseLong(tmp[col1].replaceAll("\"", ""));
 
+            //Whenever its a node add it to the hashmap by its id as the key and the username and category as the info.
+            //We take advantage of the hashmap in case we find a similar id the still only keep one key
             if(mode==NODE){
                 this.nodes.put(id, tmp[col2]+separator+tmp[col3]+separator+"0.0");
             }
+
+            /*whenever its an Edge we need to add the the edge integer +1 adn parse the source into the source local var
+            Then we look into the linksTable in case the source was already listed the result is added to the var value.
+            Then we look into the linksOutTable for the source the result is added in the var i.
+            The linksTable keeps track of the source node with its target all of them separated by commas
+            the linksOutTable keeps track of how many edges has everyNode
+            */
             else if(mode==EDGE){
-                edges++;
+
+                this.edges++;
                 long source=Long.parseLong(tmp[col2]);
-
                 String value = this.linksTable.get(source);
-
                 Integer i=this.linksOutTable.get(source);
-
                 value = (value==null) ? tmp[col3] : value+separator+tmp[col3];
-
                 i = (i==null) ? 1 : i+1;
 
                 this.linksOutTable.put(source, i);

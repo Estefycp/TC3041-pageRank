@@ -1,5 +1,6 @@
 /**
  * Created by Enrro on 08/3/2017.
+ * for more information regarding page rank use the reference https://en.wikipedia.org/wiki/PageRank
  */
 import java.io.BufferedReader;
 import java.io.File;
@@ -20,16 +21,13 @@ import javax.swing.JOptionPane;
 public class PageRank {
 
 
-
-    private static final File DEFAULT_NODES=new File("data/nodes.csv");
-    private static final File DEFAULT_EDGES=new File("data/edges.csv");
-    private static final File NODES2=new File("data/nodes2.csv");
-    private static final File EDGES2=new File("data/edges2.csv");
-    private static final File NODES3=new File("data/exatecNodes.csv");
-    private static final File EDGES3=new File("data/exatecEdges.csv");
-
+    //files csv to subtract information by commas
+    private static final File NODES=new File("data/RedditNodes.csv");
+    private static final File EDGES=new File("data/RedditEdges.csv");
 
     private static final String DEFAULT_SEPARATOR=",";
+
+    //information regarding the Page rank formula
     private static final int NODE=0,EDGE=1;
     private static final double DEFAULT_FACTOR=0.85;
     private static final int DEFAULT_ITERATIONS=100;
@@ -44,6 +42,7 @@ public class PageRank {
 
     private double avg;
 
+    //arraylist to show data that is better than average
     private ArrayList<String> betterThanAvg;
 
     private String max,min;
@@ -52,48 +51,10 @@ public class PageRank {
         int iterations[]={10,50,100};
         String result="";
         for(int i=0;i<iterations.length;i++){
-            PageRank pg=new PageRank(DEFAULT_FACTOR,DEFAULT_SEPARATOR,iterations[i],NODES3.getAbsolutePath(),EDGES3.getAbsolutePath());
+            PageRank pg=new PageRank(DEFAULT_FACTOR,DEFAULT_SEPARATOR,iterations[i],NODES.getAbsolutePath(),EDGES.getAbsolutePath());
 
             HashMap<Long,String> nodes=new HashMap<Long,String>(pg.getNodes());
 
-			/*String maxS="",minS="";
-			double maxPR=Double.NEGATIVE_INFINITY, minPR=Double.POSITIVE_INFINITY;
-			double currentPR;
-			double avg=0.0;
-			for(Long node : nodes.keySet()){
-
-				String[] tmp=nodes.get(node).split(DEFAULT_SEPARATOR);
-
-				currentPR=Double.parseDouble(tmp[1]);
-
-				if(currentPR>maxPR){
-					maxPR=currentPR;
-					maxS=tmp[0];
-				}
-				else if(currentPR<minPR){
-					minPR=currentPR;
-					minS=tmp[0];
-				}
-				avg+=currentPR;
-			}
-
-
-			avg=avg/nodes.size();
-
-			pg.betterThanAvg=new ArrayList<String>();
-
-			for(Long node : nodes.keySet()){
-				String[] tmp=nodes.get(node).split(DEFAULT_SEPARATOR);
-
-				double actual=Double.parseDouble(tmp[1]);
-
-				if(actual>=avg){
-					pg.betterThanAvg.add(tmp[0]+":"+tmp[1]);
-				}
-			}
-
-			System.out.println(pg.betterThanAvg.size());
-			*/
 
             System.out.println(pg.betterThanAvg.toString());
 
@@ -117,85 +78,6 @@ public class PageRank {
         }
 
         JOptionPane.showMessageDialog(null, result);
-    }
-
-    public static void yolo(){
-        Map<Node,List<Node>> table = new HashMap<>();
-
-        Node i = new Node(121332543l);
-        Node otro= new Node(192384123l);
-
-        List<Node> result = table.get(i);
-        List<Node> tmp;
-
-        if(result==null){
-            tmp=Arrays.asList(otro);
-            table.put(i, tmp);
-        }
-        else{
-            tmp = new ArrayList<>(result);
-            tmp.add(otro);
-            table.put(i, tmp);
-        }
-    }
-
-    static class Node{
-        Long id;
-        List<Node> previous;
-
-        public Node(Long id){
-            this.id=id;
-            this.previous=new ArrayList<>();
-        }
-
-        public int hashCode(){
-            return id.hashCode();
-        }
-
-        public boolean equals(Object o){
-            return id.equals(o);
-        }
-    }
-
-    public static List<Node> bfs(Node start, Node end, Map<Node,List<Node>> table){
-
-        Stack<Node> s = new Stack<>();
-        Set<Node> visited = new HashSet<>();
-
-        s.push(start);
-
-        Node cur;
-
-        List<Node> adjacencies;
-
-        while(!s.isEmpty()){
-
-            cur=s.pop();
-
-            if(cur.equals(end)){
-                cur.previous.add(cur);
-                return cur.previous;
-            }
-
-            adjacencies=adjacencies(cur,table);
-
-            for(Node id : adjacencies){
-                if(!visited.contains(id)){
-                    id.previous.add(cur);
-                    s.push(id);
-                    visited.add(id);
-                }
-            }
-
-        }
-
-        return null;
-    }
-
-
-    public static List<Node> adjacencies(Node node, Map<Node,List<Node>> table){
-        List<Node> result = table.get(node);
-        return (result==null) ? Arrays.asList() : result;
     }
 
     public PageRank(double factor, String separator,int iterations,String fileNameNodes,String fileNameEdges){
